@@ -98,7 +98,8 @@ target_sources(clipper PRIVATE
   src/sdp.cpp
   src/maxclique.cpp
   src/invariants/euclidean_distance.cpp
-  src/invariants/pointnormal_distance.cpp)
+  src/invariants/pointnormal_distance.cpp
+  examples/c++/test.cpp)
 target_link_libraries(clipper PUBLIC Eigen3::Eigen)
 target_link_libraries(clipper PRIVATE OpenMP::OpenMP_CXX)
 target_include_directories(clipper PUBLIC
@@ -108,6 +109,9 @@ target_compile_options(clipper PUBLIC -march=native -mavx -mfma)
 set_target_properties(clipper PROPERTIES
   VERSION ${PROJECT_VERSION})
 target_compile_definitions(clipper PUBLIC CLIPPER_VERSION="${PROJECT_VERSION}")
+
+add_executable(clipper_test_jz examples/c++/test.cpp)
+target_link_libraries(clipper_test_jz PRIVATE clipper)
 
 if(MKL_FOUND)
     target_include_directories(clipper PRIVATE ${MKL_INCLUDE_DIR})
