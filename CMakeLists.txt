@@ -35,6 +35,17 @@ endif()
 # Dependencies
 ###############################################################################
 
+##########Triangulaton library##############
+find_package(OpenCV REQUIRED)
+find_package(Boost REQUIRED)
+INCLUDE_DIRECTORIES(/usr/local/include/libqhullcpp)
+INCLUDE_DIRECTORIES(/usr/local/include/libqhull_r)
+SET(qhullLibs qhullcpp qhull_r)
+LINK_DIRECTORIES(/usr/local/lib)
+
+##########Triangulaton library##############
+
+
 include(FetchContent)
 
 find_package(Eigen3 REQUIRED)
@@ -98,8 +109,7 @@ target_sources(clipper PRIVATE
   src/sdp.cpp
   src/maxclique.cpp
   src/invariants/euclidean_distance.cpp
-  src/invariants/pointnormal_distance.cpp
-  examples/c++/test.cpp)
+  src/invariants/pointnormal_distance.cpp)
 target_link_libraries(clipper PUBLIC Eigen3::Eigen)
 target_link_libraries(clipper PRIVATE OpenMP::OpenMP_CXX)
 target_include_directories(clipper PUBLIC
@@ -109,9 +119,6 @@ target_compile_options(clipper PUBLIC -march=native -mavx -mfma)
 set_target_properties(clipper PROPERTIES
   VERSION ${PROJECT_VERSION})
 target_compile_definitions(clipper PUBLIC CLIPPER_VERSION="${PROJECT_VERSION}")
-
-add_executable(clipper_test_jz examples/c++/test.cpp)
-target_link_libraries(clipper_test_jz PRIVATE clipper)
 
 if(MKL_FOUND)
     target_include_directories(clipper PRIVATE ${MKL_INCLUDE_DIR})
@@ -131,6 +138,20 @@ if(CLIPPER_ENABLE_SCS_SDR)
     target_compile_definitions(clipper PUBLIC CLIPPER_HAS_SCS)
     target_link_libraries(clipper PRIVATE scs::scsdir)
 endif()
+
+##########Triangulaton target##############
+add_library(triangulation SHARED)
+target_sources(triangulation PRIVATE
+  src/triangulation/descriptor.cpp
+  src/triangulation/observation.cpp)
+target_include_directories(triangulation PRIVATE include ${OpenCV_INCLUDE_DIRS} ${Boost_INCLUDE_DIRS} ${EIGEN3_INCLUDE_DIR})
+target_link_libraries(triangulation ${OpenCV_LIBS} ${Boost_LIBRARIES} ${EIGEN3_LIBRARIES} ${qhullLibs})
+
+add_executable(tripper examples/c++/example.cpp)
+target_link_libraries(tripper triangulation clipper ${EIGEN3_LIBRARIES} ${Boost_LIBRARIES} ${qhullLibs})
+target_include_directories(tripper PRIVATE include/clipper include/triangulation ${EIGEN3_INCLUDE_DIR})
+
+##########Triangulaton target##############
 
 ###############################################################################
 # Extras
