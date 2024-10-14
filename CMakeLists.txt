@@ -40,6 +40,7 @@ find_package(OpenCV REQUIRED)
 find_package(Boost REQUIRED)
 INCLUDE_DIRECTORIES(/usr/local/include/libqhullcpp)
 INCLUDE_DIRECTORIES(/usr/local/include/libqhull_r)
+include_directories(${OpenCV_INCLUDE_DIRS})
 SET(qhullLibs qhullcpp qhull_r)
 LINK_DIRECTORIES(/usr/local/lib)
 
@@ -109,7 +110,8 @@ target_sources(clipper PRIVATE
   src/sdp.cpp
   src/maxclique.cpp
   src/invariants/euclidean_distance.cpp
-  src/invariants/pointnormal_distance.cpp)
+  src/invariants/pointnormal_distance.cpp
+  src/semantic_clipper.cpp)
 target_link_libraries(clipper PUBLIC Eigen3::Eigen)
 target_link_libraries(clipper PRIVATE OpenMP::OpenMP_CXX)
 target_include_directories(clipper PUBLIC
