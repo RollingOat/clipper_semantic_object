@@ -237,6 +237,7 @@ int main(){
 
   // an empty association set will be assumed to be all-to-all
   std::cout << "Scoring pairwise consistency" << std::endl;
+  auto start2 = std::chrono::high_resolution_clock::now();
   clipper.scorePairwiseConsistency(matched_points_model_matrix, matched_points_data_matrix, A);
   // find the densest clique of the previously constructed consistency graph
   std::cout << "Solving as maximum clique" << std::endl;
@@ -244,6 +245,9 @@ int main(){
   // check that the select clique was correct
   std::cout << "Getting Results" << std::endl;
   clipper::Association Ainliers = clipper.getSelectedAssociations();
+  auto end2 = std::chrono::high_resolution_clock::now();
+  std::chrono::duration<double> elapsed_seconds2 = end2 - start2;
+  std::cout << "Elapsed time for clipper: " << elapsed_seconds2.count() << "s" << std::endl;
   
   // get clipper matched points
   Eigen::Matrix2Xd clipper_matched_points_model(2, Ainliers.rows());
