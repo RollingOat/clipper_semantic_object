@@ -153,7 +153,12 @@ add_executable(tripper examples/c++/example.cpp)
 target_link_libraries(tripper triangulation clipper ${EIGEN3_LIBRARIES} ${Boost_LIBRARIES} ${qhullLibs})
 target_include_directories(tripper PRIVATE include/clipper include/triangulation ${EIGEN3_INCLUDE_DIR})
 
-##########Triangulaton target##############
+##########Semantic Clipper target##############
+add_library(semantic_clipper SHARED)
+target_sources(semantic_clipper PRIVATE
+  src/semantic_clipper.cpp)
+target_link_libraries(semantic_clipper PRIVATE clipper triangulation ${EIGEN3_LIBRARIES} ${Boost_LIBRARIES})
+target_include_directories(semantic_clipper PRIVATE include ${Boost_INCLUDE_DIRS} ${EIGEN3_INCLUDE_DIR})
 
 ###############################################################################
 # Extras
@@ -183,6 +188,7 @@ endif()
 ###############################################################################
 
 include(GNUInstallDirs)
+message(STATUS "CMAKE_INSTALL_LIBDIR: ${CMAKE_INSTALL_LIBDIR}")
 set(INSTALL_CONFIGDIR ${CMAKE_INSTALL_LIBDIR}/cmake/clipper)
 
 install(TARGETS clipper

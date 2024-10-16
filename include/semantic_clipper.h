@@ -15,9 +15,9 @@
 #include "triangulation/observation.hpp"
 #include <chrono>
 
-namespace Eigen { 
-  typedef Matrix<double, 7, 1> Vector7d; 
-}
+// namespace Eigen { 
+//   typedef Matrix<double, 7, 1> Vector7d; 
+// }
 
 namespace semantic_clipper{
 
@@ -35,7 +35,7 @@ namespace semantic_clipper{
 
     void clipper_semantic_object(const Eigen::Matrix2Xd& model, const Eigen::Matrix2Xd& data, double threshold, clipper::Association& A);
 
-    bool run_semantic_clipper(const std::vector<Eigen::Vector7d>& reference_map, const std::vector<Eigen::Vector7d>& query_map, Eigen::Matrix4d& tfFromQuery2Ref, double sigma, double epsilon, int min_num_pairs, double matching_threshold);
+    bool run_semantic_clipper(const std::vector<std::vector<double>>& reference_map, const std::vector<std::vector<double>>& query_map, Eigen::Matrix4d& tfFromQuery2Ref, double sigma, double epsilon, int min_num_pairs, double matching_threshold);
 }
 
 #endif  // SEMANTIC_CLIPPER_H

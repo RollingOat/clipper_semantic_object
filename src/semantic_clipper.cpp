@@ -135,7 +135,7 @@ namespace semantic_clipper{
         return tf;
     }
 
-    bool run_semantic_clipper(const std::vector<Eigen::Vector7d>& reference_map, const std::vector<Eigen::Vector7d>& query_map, Eigen::Matrix4d& tfFromQuery2Ref, double sigma, double epsilon, int min_num_pairs = 3, double matching_threshold = 0.1) {
+    bool run_semantic_clipper(const std::vector<std::vector<double>>& reference_map, const std::vector<std::vector<double>>& query_map, Eigen::Matrix4d& tfFromQuery2Ref, double sigma, double epsilon, int min_num_pairs = 3, double matching_threshold = 0.1) {
         /*
         Data preparation
         */
@@ -143,16 +143,16 @@ namespace semantic_clipper{
         std::vector<std::vector<double>> model_points;
         for (int i = 0; i < reference_map.size(); i++) {
             std::vector<double> point;
-            point.push_back(reference_map[i](0));
-            point.push_back(reference_map[i](1));
+            point.push_back(reference_map[i][0]);
+            point.push_back(reference_map[i][1]);
             model_points.push_back(point);
         }
         
         std::vector<std::vector<double>> data_points;
         for (int i = 0; i < query_map.size(); i++) {
             std::vector<double> point;
-            point.push_back(query_map[i](0));
-            point.push_back(query_map[i](1));
+            point.push_back(query_map[i][0]);
+            point.push_back(query_map[i][1]);
             data_points.push_back(point);
         }
         
