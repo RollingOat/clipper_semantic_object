@@ -246,6 +246,16 @@ namespace semantic_clipper{
 
         // estimate transformation
         Eigen::Matrix3d tf = estimate_tf(clipper_matched_points_model, clipper_matched_points_data);
+
+        // TODO: convert tf to 4x4 matrix
+        tfFromQuery2Ref = Eigen::Matrix4d::Identity();
+        double yaw = std::atan2(tf(1, 0), tf(0, 0));
+        tfFromQuery2Ref(0, 3) = tf(0, 2);
+        tfFromQuery2Ref(1, 3) = tf(1, 2);
+        tfFromQuery2Ref(0, 0) = std::cos(yaw);
+        tfFromQuery2Ref(0, 1) = -std::sin(yaw);
+        tfFromQuery2Ref(1, 0) = std::sin(yaw);
+        tfFromQuery2Ref(1, 1) = std::cos(yaw);
         std::cout << "Estimated transformation: " << std::endl;
         std::cout << tf << std::endl;
         return true;
