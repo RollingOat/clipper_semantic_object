@@ -37,6 +37,7 @@ endif()
 
 ##########Triangulaton library##############
 find_package(OpenCV REQUIRED)
+find_package(catkin REQUIRED COMPONENTS roscpp)
 find_package(Boost REQUIRED)
 INCLUDE_DIRECTORIES(/usr/local/include/libqhullcpp)
 INCLUDE_DIRECTORIES(/usr/local/include/libqhull_r)
@@ -112,11 +113,12 @@ target_sources(clipper PRIVATE
   src/invariants/euclidean_distance.cpp
   src/invariants/pointnormal_distance.cpp
   src/semantic_clipper.cpp)
-target_link_libraries(clipper PUBLIC Eigen3::Eigen)
+target_link_libraries(clipper PUBLIC Eigen3::Eigen ${catkin_LIBRARIES})
 target_link_libraries(clipper PRIVATE OpenMP::OpenMP_CXX)
 target_include_directories(clipper PUBLIC
     $<INSTALL_INTERFACE:include>
-    $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>)
+    $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
+    ${catkin_INCLUDE_DIRS})
 target_compile_options(clipper PUBLIC -march=native -mavx -mfma)
 set_target_properties(clipper PROPERTIES
   VERSION ${PROJECT_VERSION})

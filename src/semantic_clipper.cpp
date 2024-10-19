@@ -1,4 +1,5 @@
 #include "semantic_clipper.h"
+#include <ros/ros.h>
 
 namespace semantic_clipper{
 
@@ -110,6 +111,7 @@ namespace semantic_clipper{
     void match_triangles(const std::vector<DelaunayTriangulation::Polygon>& triangles_model, const std::vector<DelaunayTriangulation::Polygon>& triangles_data, std::vector<double>& diffs, std::vector<std::vector<double>>& matched_points_model, std::vector<std::vector<double>>& matched_points_data, double threshold = 0.1) {
         for (int i = 0; i < triangles_model.size(); i++) {
             for (int j = 0; j < triangles_data.size(); j++) {
+            // TODO: add semantic label check here
             compute_triangle_diff(triangles_model[i], triangles_data[j], diffs, matched_points_model, matched_points_data, threshold);
             }
         }
@@ -135,24 +137,30 @@ namespace semantic_clipper{
         return tf;
     }
 
-    bool run_semantic_clipper(const std::vector<std::vector<double>>& reference_map, const std::vector<std::vector<double>>& query_map, Eigen::Matrix4d& tfFromQuery2Ref, double sigma, double epsilon, int min_num_pairs = 3, double matching_threshold = 0.1) {
+    bool run_semantic_clipper(const std::vector<std::vector<double>>& reference_map, const std::vector<std::vector<double>>& query_map, Eigen::Matrix4d& tfFromQuery2Ref, double sigma, double epsilon, int min_num_pairs, double matching_threshold) {
         /*
         Data preparation
         */
+        
+        // IMPORANT: each object is in the format of [label, x, y, z, dim_1, dim_2, dim_3]
+
         // convert matrix to vector of vectors
+        // TODO(slidegraph): make this to use 3D points
         std::vector<std::vector<double>> model_points;
         for (int i = 0; i < reference_map.size(); i++) {
             std::vector<double> point;
-            point.push_back(reference_map[i][0]);
+            // get the x and y coordinates of the object (ignoring the label)
             point.push_back(reference_map[i][1]);
+            point.push_back(reference_map[i][2]);
             model_points.push_back(point);
         }
         
         std::vector<std::vector<double>> data_points;
         for (int i = 0; i < query_map.size(); i++) {
             std::vector<double> point;
-            point.push_back(query_map[i][0]);
+            // get the x and y coordinates of the object (ignoring the label)
             point.push_back(query_map[i][1]);
+            point.push_back(query_map[i][2]);
             data_points.push_back(point);
         }
         
@@ -175,6 +183,7 @@ namespace semantic_clipper{
         std::vector<std::vector<double>> matched_points_model;
         std::vector<std::vector<double>> matched_points_data;
         auto start = std::chrono::high_resolution_clock::now();
+        // TODO(slidegraph): add semantic label check in this function
         match_triangles(triangles_model, triangles_data, diffs, matched_points_model, matched_points_data, matching_threshold);
         auto end = std::chrono::high_resolution_clock::now();
         std::chrono::duration<double> elapsed_seconds = end - start;
@@ -240,8 +249,11 @@ namespace semantic_clipper{
 
         // check if the number of matched points is greater than the minimum number of pairs
         if (clipper_matched_points_model.cols() < min_num_pairs) {
-            std::cout << "Number of matched points is less than the minimum number of pairs" << std::endl;
+            // std::cout << "Number of matched points is less than the minimum number of pairs" << std::endl;
+            ROS_ERROR_STREAM("Number of matched points is less than the minimum number of pairs, number of matched points: " << clipper_matched_points_model.cols());
             return false;
+        } else {
+            ROS_ERROR_STREAM("Number of matched points: " << clipper_matched_points_model.cols());
         }
 
         // estimate transformation
