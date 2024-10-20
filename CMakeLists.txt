@@ -162,6 +162,11 @@ target_sources(semantic_clipper PRIVATE
 target_link_libraries(semantic_clipper PRIVATE clipper triangulation ${EIGEN3_LIBRARIES} ${Boost_LIBRARIES})
 target_include_directories(semantic_clipper PRIVATE include ${Boost_INCLUDE_DIRS} ${EIGEN3_INCLUDE_DIR})
 
+#########Test semantic clipper target##############
+add_executable(test_semantic_clipper test/test_semantic_clipper.cpp)
+target_link_libraries(test_semantic_clipper semantic_clipper ${EIGEN3_LIBRARIES} ${Boost_LIBRARIES})
+target_include_directories(test_semantic_clipper PRIVATE include ${Boost_INCLUDE_DIRS} ${EIGEN3_INCLUDE_DIR})
+
 ###############################################################################
 # Extras
 ###############################################################################
