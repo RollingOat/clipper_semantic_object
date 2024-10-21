@@ -115,6 +115,34 @@ void compute_triangle_diff(const DelaunayTriangulation::Polygon& triangle_model,
   }
 }
 
+void compute_sorted_dist_vertex2centroid(const DelaunayTriangulation::Polygon& triangle, std::vector<double>& sorted_dist) {
+  // get the vertices of the triangles
+  PointVector vertices= triangle.points; // 3 by 2 vector
+  int num_vertices = vertices.size();
+  // convert the vertices to Eigen::Matrix2Xd
+  Eigen::Matrix2Xd vertices_matrix(2, vertices.size()); // 2 by 3 matrix
+  for (int i = 0; i < vertices.size(); i++) {
+    vertices_matrix(0, i) = vertices[i][0];
+    vertices_matrix(1, i) = vertices[i][1];
+  }
+  // compute the centroid of the triangles
+  Eigen::Vector2d centroid = vertices_matrix.rowwise().mean();
+  // compute the euclidean distance between vertices and centroid
+  Eigen::Matrix2Xd vertices_centered = vertices_matrix.colwise() - centroid;
+  std::vector<double> dist_model; // 3 by 1 vector
+  for(int i = 0; i < num_vertices; i++) {
+    double norm = vertices_centered.col(i).norm();
+    dist_model.push_back(norm);
+  }
+  // sort the vertices based on the distance to the centroid
+  std::vector<int> arg_sort_model = argsort(dist_model);
+  std::vector<double> sorted_dist_model; // 3 by 1 vector
+  for (int i = 0; i < num_vertices; i++) {
+    sorted_dist.push_back(dist_model[arg_sort_model[i]]);
+  }
+}
+
+
 // function to find matched triangles and points
 void match_triangles(const std::vector<DelaunayTriangulation::Polygon>& triangles_model, const std::vector<DelaunayTriangulation::Polygon>& triangles_data, std::vector<double>& diffs, std::vector<std::vector<double>>& matched_points_model, std::vector<std::vector<double>>& matched_points_data, double threshold = 0.1) {
   for (int i = 0; i < triangles_model.size(); i++) {
@@ -166,7 +194,7 @@ int main(){
     model_points.push_back(point);
   }
   // read from data file 2
-  std::string data2_file_name = "/home/jiuzhou/clipper_semantic_object/examples/data/robot1Map_forest_2d.txt";
+  std::string data2_file_name = "/home/jiuzhou/clipper_semantic_object/examples/data/robot2Map_forest_2d.txt";
   Eigen::Matrix2Xd data = read_2d_points(data2_file_name);
   // convert matrix to vector of vectors
   std::vector<std::vector<double>> data_points;
