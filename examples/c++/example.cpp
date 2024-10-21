@@ -226,7 +226,7 @@ int main(){
 
   // instantiate the invariant function that will be used to score associations
   clipper::invariants::EuclideanDistance::Params iparams;
-  iparams.sigma = 0.1;
+  iparams.sigma = 0.1;  
   iparams.epsilon = 0.3;
 
   clipper::invariants::EuclideanDistancePtr invariant =

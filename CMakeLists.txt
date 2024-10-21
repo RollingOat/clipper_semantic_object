@@ -18,7 +18,7 @@ endif()
 # Options
 ###############################################################################
 
-option(CLIPPER_BUILD_BINDINGS_PYTHON "Build Python bindings" ON)
+option(CLIPPER_BUILD_BINDINGS_PYTHON "Build Python bindings" OFF)
 option(CLIPPER_BUILD_BINDINGS_MATLAB "Build MATLAB bindings" OFF)
 option(CLIPPER_BUILD_TESTS "Build testsuite" OFF)
 option(CLIPPER_BUILD_BENCHMARKS "Build benchmarks" OFF)

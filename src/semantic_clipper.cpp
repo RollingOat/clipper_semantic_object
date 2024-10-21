@@ -118,7 +118,7 @@ namespace semantic_clipper{
     }
 
 
-    // function to estimate transformation
+    // function to estimate transformation from matched points a to matched points b
     Eigen::Matrix3d estimate_tf(Eigen::Matrix2Xd matched_points_a, Eigen::Matrix2Xd matched_points_b) {
         Eigen::Vector2d centroid_a = matched_points_a.rowwise().mean();
         Eigen::Vector2d centroid_b = matched_points_b.rowwise().mean();
