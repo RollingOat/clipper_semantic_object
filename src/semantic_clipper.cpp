@@ -6,7 +6,7 @@ namespace semantic_clipper{
     Eigen::Matrix2Xd read_2d_points(std::string txt_file) {
         // each line of the txt file is seperrated by a comma
         // the first column is the x coordinate and the second column is the y coordinate
-        std::cout << "Reading data from " << txt_file << std::endl;
+        // std::cout << "Reading data from " << txt_file << std::endl;
         std::ifstream file(txt_file);
         std::string line;
         std::vector<std::vector<double>> points;
@@ -25,7 +25,7 @@ namespace semantic_clipper{
             points_matrix(0, i) = points[i][0];
             points_matrix(1, i) = points[i][1];
         }
-        std::cout << "Read " << points.size() << " points" << std::endl;
+        // std::cout << "Read " << points.size() << " points" << std::endl;
         return points_matrix;
     }
 
@@ -171,9 +171,9 @@ namespace semantic_clipper{
         DelaunayTriangulation::Observation observation_data(data_points);
 
         std::vector<DelaunayTriangulation::Polygon> triangles_model = observation_model.triangles;
-        std::cout << "Number of triangles in model: " << triangles_model.size() << std::endl;
+        // std::cout << "Number of triangles in model: " << triangles_model.size() << std::endl;
         std::vector<DelaunayTriangulation::Polygon> triangles_data = observation_data.triangles;
-        std::cout << "Number of triangles in data: " << triangles_data.size() << std::endl;
+        // std::cout << "Number of triangles in data: " << triangles_data.size() << std::endl;
 
         /*
         Triangle Matching
@@ -187,7 +187,7 @@ namespace semantic_clipper{
         match_triangles(triangles_model, triangles_data, diffs, matched_points_model, matched_points_data, matching_threshold);
         auto end = std::chrono::high_resolution_clock::now();
         std::chrono::duration<double> elapsed_seconds = end - start;
-        std::cout << "Elapsed time for matching: " << elapsed_seconds.count() << "s" << std::endl;
+        // std::cout << "Elapsed time for matching: " << elapsed_seconds.count() << "s" << std::endl;
         
         /*
         Clipper Data Association
@@ -203,7 +203,7 @@ namespace semantic_clipper{
         }
         // create a clipper::Association object from the matched points
         int number_of_initial_matched_points = matched_points_model.size();
-        std::cout << "Number of initial matched points: " << number_of_initial_matched_points << std::endl;
+        // std::cout << "Number of initial matched points: " << number_of_initial_matched_points << std::endl;
         clipper::Association A = clipper::Association(number_of_initial_matched_points, 2);
         for (int i = 0; i < matched_points_model.size(); i++) {
             A(i, 0) = i;
@@ -222,18 +222,18 @@ namespace semantic_clipper{
         clipper::CLIPPER clipper(invariant, params);
 
         // an empty association set will be assumed to be all-to-all
-        std::cout << "Scoring pairwise consistency" << std::endl;
+        // std::cout << "Scoring pairwise consistency" << std::endl;
         auto start2 = std::chrono::high_resolution_clock::now();
         clipper.scorePairwiseConsistency(matched_points_model_matrix, matched_points_data_matrix, A);
         // find the densest clique of the previously constructed consistency graph
-        std::cout << "Solving as maximum clique" << std::endl;
+        // std::cout << "Solving as maximum clique" << std::endl;
         clipper.solve();
         // check that the select clique was correct
-        std::cout << "Getting Results" << std::endl;
+        // std::cout << "Getting Results" << std::endl;
         clipper::Association Ainliers = clipper.getSelectedAssociations();
         auto end2 = std::chrono::high_resolution_clock::now();
         std::chrono::duration<double> elapsed_seconds2 = end2 - start2;
-        std::cout << "Elapsed time for clipper: " << elapsed_seconds2.count() << "s" << std::endl;
+        // std::cout << "Elapsed time for clipper: " << elapsed_seconds2.count() << "s" << std::endl;
         
         // get clipper matched points
         Eigen::Matrix2Xd clipper_matched_points_model(2, Ainliers.rows());
@@ -250,10 +250,10 @@ namespace semantic_clipper{
         // check if the number of matched points is greater than the minimum number of pairs
         if (clipper_matched_points_model.cols() < min_num_pairs) {
             // std::cout << "Number of matched points is less than the minimum number of pairs" << std::endl;
-            ROS_ERROR_STREAM("Number of matched points is less than the minimum number of pairs, number of matched points: " << clipper_matched_points_model.cols());
+            ROS_INFO_STREAM("Number of matched points is less than the minimum number of pairs, number of matched points: " << clipper_matched_points_model.cols());
             return false;
         } else {
-            ROS_ERROR_STREAM("Number of matched points: " << clipper_matched_points_model.cols());
+            ROS_INFO_STREAM("Number of matched points: " << clipper_matched_points_model.cols());
         }
 
         // estimate transformation
@@ -268,8 +268,8 @@ namespace semantic_clipper{
         tfFromQuery2Ref(0, 1) = -std::sin(yaw);
         tfFromQuery2Ref(1, 0) = std::sin(yaw);
         tfFromQuery2Ref(1, 1) = std::cos(yaw);
-        std::cout << "Estimated transformation: " << std::endl;
-        std::cout << tf << std::endl;
+        // std::cout << "Estimated transformation: " << std::endl;
+        // std::cout << tf << std::endl;
         return true;
     }
 }
